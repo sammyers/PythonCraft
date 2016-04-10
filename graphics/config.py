@@ -1,5 +1,5 @@
 # Ticks per second
-FPS = 60
+TICKS = 60
 
 # Field of view in degrees
 FOV = 60.0
@@ -16,3 +16,5 @@ DIRECTIONS = [(1, 0, 0),
 CHUNK_SIZE = 16
 
 TEXTURE_PATH = 'terrain.png'
+
+WALKING_SPEED = 3.0
