@@ -70,6 +70,9 @@ class Window(pyglet.window.Window):
             self.model.rotation = (x, y)
 
     def on_mouse_press(self, x, y, button, modifiers):
+        """
+        Called when the player clicks one of the mouse buttons.
+        """
         if self.exclusive:
             #Do something
             pass
@@ -77,12 +80,18 @@ class Window(pyglet.window.Window):
             self.set_exclusive_mouse(True)
 
     def on_key_press(self, symbol, modifiers):
+        """
+        Called when the player presses a key.
+        """
         if symbol == key.ESCAPE:
             self.set_exclusive_mouse(False)
         elif symbol in MOVE:
             self.model.motion[MOVE[symbol][0]] += MOVE[symbol][1]
 
     def on_key_release(self, symbol, modifiers):
+        """
+        Called when the player releases a key.
+        """
         if symbol in MOVE:
             self.model.motion[MOVE[symbol][0]] -= MOVE[symbol][1]
 
@@ -144,37 +153,37 @@ class Window(pyglet.window.Window):
         self.set_2d()
         self.draw_label()
 
+    def get_sight_vector(self):
+        """
+        Return a unit vector in the direction the player is currently looking.
+        """
+        pass
+
     def get_motion_vector(self):
-        # Angle of motion relative to orientation (radians)
-        if any(self.model.motion):
-            motion = math.atan2(self.model.motion[0], self.model.motion[1])
+        """
+        Return a unit vector in the direction the player is currently moving.
+        If the player is not moving, return a zero vector.
+        """
+        # Check for movement in x and z, y is operated on differently
+        if any(self.model.motion[::2]):
+            # Angle of motion relative to orientation (radians)
+            motion = math.atan2(self.model.motion[2], self.model.motion[0])
         else:
-            return (0, 0, 0)
+            return (0, self.model.motion[1], 0)
         # Angle of orientation
         direction = math.radians(self.model.rotation[0])
         # Absolute angle of motion (0 radians is in the +x direction)
         angle = motion - direction
         x, z = math.cos(angle), math.sin(angle)
-        return (x, 0, z)
+        return (x, self.model.motion[1], z)
 
     def update(self, dt):
-        """Update physics, primarily player movement. Called once per tick."""
+        """
+        Update player movement. Called once per tick.
+        """
         x, y, z = self.model.position
         dx, dy, dz = self.get_motion_vector()
         x += dx * WALKING_SPEED * dt
-        y += dy * WALKING_SPEED * dt
+        y += dy * FLYING_SPEED * dt
         z -= dz * WALKING_SPEED * dt
         self.model.position = (x, y, z)
-
-
-def setup():
-    """
-    Basic OpenGL setup function.
-    """
-    # Set the color of the sky (the window is cleared to this color every frame)
-    glClearColor(0.5, 0.69, 1.0, 1)
-    # 
-    glEnable(GL_CULL_FACE)
-    # Make pixelated textures not look awful
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)

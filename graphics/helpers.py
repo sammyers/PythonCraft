@@ -1,3 +1,5 @@
+from pyglet.gl import *
+
 def cube_vertices(position, width):
     """ 
     Return the vertices of the cube at position (x, y, z) with a given size.
@@ -53,3 +55,15 @@ def texture_map(top, bottom, sides):
     bottom_vertices = texture_coords(bottom)
     side_vertices = texture_coords(sides) * 4
     return top_vertices + bottom_vertices + side_vertices
+
+def setup():
+    """
+    Basic OpenGL setup function.
+    """
+    # Set the color of the sky (the window is cleared to this color every frame)
+    glClearColor(0.5, 0.69, 1.0, 1)
+    # Render only front-facing sides of cubes to reduce performance overhead
+    glEnable(GL_CULL_FACE)
+    # Make pixelated textures not look awful
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)

@@ -1,1 +1,2 @@
-from window import Window, setup
+from window import Window
+from helpers import setup

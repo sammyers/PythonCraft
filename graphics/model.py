@@ -33,24 +33,32 @@ class Model(object):
         self.rotation = (0, 0)
 
         # Initialize player motion in the xz plane.
-        # For the first element, -1 and 1 are backward and forward.
-        # For the second, -1 and 1 are left and right.
-        # For the third, down and up.
+        # For the first element, -1 and 1 are left and right.
+        # For the second, -1 and 1 are down and up.
+        # For the third, backwards and forwards.
         self.motion = [0, 0, 0]
 
         # Place blocks in the world
         self._initialize()
 
     def _initialize(self):
-        """Generate terrain to initialize the world."""
-        self.add_block((1, 1, -4), 0)
-
-        for x in range(-8, 9):
-            for z in range(-8, 9):
-                self.add_block((x, 0, z), 0)
+        """
+        Generate terrain to initialize the world.
+        """
+        s = [(-17, -1), (-17, 2), (-16, -2), (-16, 0), (-16, 2), (-15, -2), (-15, 1)]
+        a = [(-13, -1), (-13, 0), (-13, 1), (-13, 2), (-12, -2), (-12, 0), (-11, -1), (-11, 0), (-11, 1), (-11, 2)]
+        m = [(-9, -1), (-9, 0), (-9, 1), (-9, 2), (-8, -2), (-7, -1), (-7, 0), (-7, 1), (-6, -2), (-5, -1), (-5, 0), (-5, 1), (-5, 2)]
+        positions = s + a + m
+        for x in range(-19, 20):
+            for z in range(-19, 20):
+                self.add_block((x, 0, z), 2)
+        for x, z in positions:
+            self.add_block((x, 1, z), 3)
 
     def add_block(self, position, block_id):
-        """Place a block at a given set of coordinates."""
+        """
+        Place a block at a given set of coordinates.
+        """
         # Place the block in the world
         self.world[position] = block_id
         # Make the block renderable
@@ -58,7 +66,9 @@ class Model(object):
             self.show_block(position)
 
     def delete_block(self, position):
-        """Remove a block from a given set of coordinates."""
+        """
+        Remove a block from a given set of coordinates.
+        """
         pass
 
     def show_block(self, position):
@@ -74,6 +84,9 @@ class Model(object):
             ('t2f/static', texture_data))
 
     def hide_block(self, position):
+        """
+        Stop a block from being rendered.
+        """
         pass
 
     def check_exposed(self, position):

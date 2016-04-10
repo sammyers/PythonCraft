@@ -1,3 +1,5 @@
+TEXTURE_PATH = 'terrain.png'
+
 # Ticks per second
 TICKS = 60
 
@@ -15,6 +17,6 @@ DIRECTIONS = [(1, 0, 0),
 # Width of chunks in blocks (used to make block loading easier)
 CHUNK_SIZE = 16
 
-TEXTURE_PATH = 'terrain.png'
-
+# Speeds are in meters per second
 WALKING_SPEED = 3.0
+FLYING_SPEED = 4.0

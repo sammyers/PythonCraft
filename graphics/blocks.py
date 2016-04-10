@@ -24,5 +24,10 @@ BLOCKS = {
 		'name': 'Brick',
 		'texture': ((7, 15), (7, 15), (7, 15)),
 		'durability': 5
+		},
+	4: {
+		'name': 'Bookshelf',
+		'texture': ((4, 15), (4, 15), (3, 13)),
+		'durability': 2
 		}
 }
