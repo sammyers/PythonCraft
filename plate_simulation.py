@@ -41,5 +41,9 @@ if __name__ == "__main__":
 
     heightmap = np.reshape(int_hmap,(width,height))
 
-    height_dict = {(x,y,z):1 for y in range(h) for x, h in enumerate(row)
-                    for z, row in enumerate(heightmap)}
+    height_dict = {}
+    for z, row in enumerate(heightmap):
+        for x, h in enumerate(row):
+            for y in range(h):
+                height_dict[(x, y, z)] = 1 if y == h else 2
+    print height_dict
