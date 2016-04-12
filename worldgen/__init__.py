@@ -1,0 +1,1 @@
+from plate_simulation import generate_heightmap

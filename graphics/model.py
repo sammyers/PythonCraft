@@ -6,9 +6,10 @@ from config import *
 from helpers import cube_vertices, texture_map
 
 class Model(object):
-
-    def __init__(self):
-
+    """
+    Stores world and player data, with methods to modify blocks.
+    """
+    def __init__(self, world=None):
         # Batch of pyglet VertexLists; everything loaded into the batch is drawn
         self.batch = Batch()
 
@@ -16,7 +17,10 @@ class Model(object):
         self.group = TextureGroup(image.load(TEXTURE_PATH).get_texture())
 
         # All of the blocks in the world; key is a tuple of (x, y, z) position
-        self.world = {}
+        if world is None:
+            self.world = {}
+        else:
+            self.world = world
 
         # Just the blocks that are visible, i.e. exposed on at least one side
         self.visible = {}
@@ -45,15 +49,17 @@ class Model(object):
         """
         Generate terrain to initialize the world.
         """
-        s = [(-17, -1), (-17, 2), (-16, -2), (-16, 0), (-16, 2), (-15, -2), (-15, 1)]
-        a = [(-13, -1), (-13, 0), (-13, 1), (-13, 2), (-12, -2), (-12, 0), (-11, -1), (-11, 0), (-11, 1), (-11, 2)]
-        m = [(-9, -1), (-9, 0), (-9, 1), (-9, 2), (-8, -2), (-7, -1), (-7, 0), (-7, 1), (-6, -2), (-5, -1), (-5, 0), (-5, 1), (-5, 2)]
-        positions = s + a + m
-        for x in range(-19, 20):
-            for z in range(-19, 20):
-                self.add_block((x, 0, z), 2)
-        for x, z in positions:
-            self.add_block((x, 1, z), 3)
+        # s = [(-17, -1), (-17, 2), (-16, -2), (-16, 0), (-16, 2), (-15, -2), (-15, 1)]
+        # a = [(-13, -1), (-13, 0), (-13, 1), (-13, 2), (-12, -2), (-12, 0), (-11, -1), (-11, 0), (-11, 1), (-11, 2)]
+        # m = [(-9, -1), (-9, 0), (-9, 1), (-9, 2), (-8, -2), (-7, -1), (-7, 0), (-7, 1), (-6, -2), (-5, -1), (-5, 0), (-5, 1), (-5, 2)]
+        # positions = s + a + m
+        # for x in range(-19, 20):
+        #     for z in range(-19, 20):
+        #         self.add_block((x, 0, z), 1)
+        # for x, z in positions:
+        #     self.add_block((x, 1, z), 2)
+        for location in self.world:
+            self.add_block(location, self.world[location])
 
     def add_block(self, position, block_id):
         """
@@ -72,13 +78,20 @@ class Model(object):
         pass
 
     def show_block(self, position):
+        """
+        Add a block to the batch to be rendered by OpenGL.
+        The block will continue being rendered until it's hidden or deleted.
+        """
+        # Add to record of visible blocks
         self.visible[position] = self.world[position]
         # Find the texture coordinates for the block
-        texture = BLOCKS[self.world[position]]['texture']
+        texture_location = BLOCKS[self.world[position]]['texture']
 
+        # Convert cube coordinates and texture position to OpenGl vertices
         vertex_data = cube_vertices(position, 1)
-        texture_data = texture_map(*texture)
+        texture_data = texture_map(*texture_location)
 
+        # Add the cube to the batch, mapping texture vertices to cube vertices.
         self.vertices[position] = self.batch.add(24, GL_QUADS, self.group,
             ('v3f/static', vertex_data),
             ('t2f/static', texture_data))
@@ -87,7 +100,9 @@ class Model(object):
         """
         Stop a block from being rendered.
         """
-        pass
+        del self.visible[position]
+        # Remove from the batch by deleting the vertex list
+        self.vertices[position].pop().delete()
 
     def check_exposed(self, position):
         """

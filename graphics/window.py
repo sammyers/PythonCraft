@@ -9,11 +9,18 @@ from model import Model
 from controls import *
 
 class Window(pyglet.window.Window):
+    """
+    Combination of view and controller functionality. Interfaces with the model.
+    Features:
+        Handles mouse and keyboard events.
+        Renders OpenGL polygons based on model data.
+        Updates physics.
+    """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, world=None, *args, **kwargs):
         super(Window, self).__init__(*args, **kwargs)
 
-        self.model = Model()
+        self.model = Model(world)
 
         # Don't capture the mouse at first
         self.exclusive = False
@@ -41,13 +48,13 @@ class Window(pyglet.window.Window):
         """
         Draw the debug text.
         """
-        x, y, z = self.model.position
-        debug_string = 'Position: ({}, {}, {}) \n{} fps \nBlocks: {} \nBlocks shown: {} \n{}'
-        self.label.text = debug_string.format(x, y, z, 
+        debug_string = 'Position: {} \n{} fps \nBlocks: {} \nBlocks shown: {} \n{} \n{}'
+        self.label.text = debug_string.format(self.model.position, 
                                               pyglet.clock.get_fps(),
                                               len(self.model.world),
                                               len(self.model.visible),
-                                              self.get_motion_vector())
+                                              self.get_motion_vector(),
+                                              self.get_sight_vector())
         self.label.draw()
 
     def on_mouse_motion(self, x, y, dx, dy):
@@ -63,11 +70,11 @@ class Window(pyglet.window.Window):
         """
         if self.exclusive:
             m = 0.15 #Mouse sensitivity
-            x, y = self.model.rotation
-            x, y = x + dx * m, y + dy * m
+            xz, yz = self.model.rotation
+            xz, yz = xz + dx * m, yz + dy * m
             # Make sure up-down rotation is within a 180 degree range
-            y = max(-90, min(90, y))
-            self.model.rotation = (x, y)
+            yz = max(-90, min(90, yz))
+            self.model.rotation = (xz, yz)
 
     def on_mouse_press(self, x, y, button, modifiers):
         """
@@ -112,7 +119,7 @@ class Window(pyglet.window.Window):
         # Reset the current matrix
         glLoadIdentity()
         # Set up a perspective projection matrix
-        gluPerspective(FOV, width / float(height), 0.1, 60.0)
+        gluPerspective(FOV, width / float(height), 0.1, RENDER_DISTANCE)
         # Switch to a modelview matrix (necessary to make translations and rotations)
         glMatrixMode(GL_MODELVIEW)
         
@@ -153,11 +160,22 @@ class Window(pyglet.window.Window):
         self.set_2d()
         self.draw_label()
 
+    def get_facing_block(self):
+        """
+        Return the position of the block the player is currently looking at.
+        """
+        direction = self.get_sight_vector()
+
     def get_sight_vector(self):
         """
         Return a unit vector in the direction the player is currently looking.
         """
-        pass
+        theta, phi = self.model.rotation
+        # Do some trigonometry to 
+        x = math.sin(math.radians(theta)) * math.cos(math.radians(phi)) 
+        y = math.sin(math.radians(phi))
+        z = -math.cos(math.radians(theta)) * math.cos(math.radians(phi))
+        return (x, y, z)
 
     def get_motion_vector(self):
         """
@@ -174,7 +192,7 @@ class Window(pyglet.window.Window):
         direction = math.radians(self.model.rotation[0])
         # Absolute angle of motion (0 radians is in the +x direction)
         angle = motion - direction
-        x, z = math.cos(angle), math.sin(angle)
+        x, z = math.cos(angle), -math.sin(angle)
         return (x, self.model.motion[1], z)
 
     def update(self, dt):
@@ -185,5 +203,5 @@ class Window(pyglet.window.Window):
         dx, dy, dz = self.get_motion_vector()
         x += dx * WALKING_SPEED * dt
         y += dy * FLYING_SPEED * dt
-        z -= dz * WALKING_SPEED * dt
+        z += dz * WALKING_SPEED * dt
         self.model.position = (x, y, z)
