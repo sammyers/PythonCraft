@@ -26,10 +26,12 @@ def generate_heightmap(seed, width, height):
     # pm = platec.get_platesmap(p)
 
     platec.destroy(p)
-    
-    int_hmap = [int(round(h*2)) for h in hmap]
+
+    int_hmap = [int(round(h)) for h in hmap]
 
     heightmap = np.reshape(int_hmap,(width,height))
+
+    print max(hmap)
 
     height_dict = {}
     for z, row in enumerate(heightmap):
@@ -48,6 +50,6 @@ if __name__ == "__main__":
     height_dict = generate_heightmap(seed, width, height)
 
     zeros = filter(lambda x: x[1] == 0, height_dict)
-    print len(zeros)
+    # print len(zeros)
 
     # print height_dict
