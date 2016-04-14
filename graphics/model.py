@@ -49,15 +49,6 @@ class Model(object):
         """
         Generate terrain to initialize the world.
         """
-        # s = [(-17, -1), (-17, 2), (-16, -2), (-16, 0), (-16, 2), (-15, -2), (-15, 1)]
-        # a = [(-13, -1), (-13, 0), (-13, 1), (-13, 2), (-12, -2), (-12, 0), (-11, -1), (-11, 0), (-11, 1), (-11, 2)]
-        # m = [(-9, -1), (-9, 0), (-9, 1), (-9, 2), (-8, -2), (-7, -1), (-7, 0), (-7, 1), (-6, -2), (-5, -1), (-5, 0), (-5, 1), (-5, 2)]
-        # positions = s + a + m
-        # for x in range(-19, 20):
-        #     for z in range(-19, 20):
-        #         self.add_block((x, 0, z), 1)
-        # for x, z in positions:
-        #     self.add_block((x, 1, z), 2)
         for location in self.world:
             self.add_block(location, self.world[location])
 
