@@ -1,3 +1,6 @@
+"""first run at diamond square method, with help of javascript tutorial
+"""
+
 import numpy as np
 import math
 import random
