@@ -37,7 +37,7 @@ def generate_heightmap(seed, width, height):
     for z, row in enumerate(heightmap):
         for x, h in enumerate(row):
             for y in range(h + 1):
-                height_dict[(x, y, z)] = 6 if h == 0 else (1 if y == h else 2)
+                height_dict[(x, y, z)] = 6 if h == 0 else (1 if y == h else (3 if y <= h - 3 else 2))
 
     return height_dict
 

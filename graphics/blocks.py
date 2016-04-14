@@ -34,5 +34,10 @@ BLOCKS = {
 		'name': 'Water',
 		'texture': ((14, 15), (14, 15), (14, 15)),
 		'durability': 1000
-		}	
+		},
+	7: {
+		'name': 'Diamond Block',
+		'texture': ((8, 10), (8, 8), (8, 9)),
+		'durability': 1000
+		}
 }
