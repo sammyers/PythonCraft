@@ -25,4 +25,4 @@ CHUNK_DISTANCE = 2
 
 # Speeds are in meters per second
 WALKING_SPEED = 5.0
-FLYING_SPEED = 8.0
+FLYING_SPEED = 20.0
