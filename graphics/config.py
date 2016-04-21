@@ -18,8 +18,11 @@ DIRECTIONS = [(1, 0, 0),
               (0, 0, -1)]
 
 # Width of chunks in blocks (used to make block loading easier)
-CHUNK_SIZE = 16
+CHUNK_SIZE = 25
+
+# Number of adjacent chunks to render around the player
+CHUNK_DISTANCE = 2
 
 # Speeds are in meters per second
 WALKING_SPEED = 5.0
-FLYING_SPEED = 4.0
+FLYING_SPEED = 8.0

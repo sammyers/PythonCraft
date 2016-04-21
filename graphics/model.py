@@ -3,7 +3,8 @@ from pyglet import image
 from pyglet.gl import *
 from blocks import BLOCKS
 from config import *
-from helpers import cube_vertices, texture_map
+from helpers import cube_vertices, texture_map, get_chunk
+import math
 
 class Model(object):
     """
@@ -28,8 +29,17 @@ class Model(object):
         # Mapping from position to a pyglet VertexList (only for visible blocks)
         self.vertices = {}
 
+        # Mapping from chunks to block locations within those chunks.
+        self.chunks = {}
+
         # The player's position in the world, initially at the origin.
         self.position = (0, 2, 0)
+
+        # The chunk in which the player is currently located.
+        self.chunk = get_chunk(self.position, CHUNK_SIZE)
+
+        #
+        self.nearby = self.get_nearby_chunks(self.chunk)
 
         # The rotation of the player's view. 
         # First element is in the xz plane, second in some rotation of the yz plane.
@@ -52,14 +62,59 @@ class Model(object):
         for location in self.world:
             self.add_block(location, self.world[location])
 
+    def get_nearby_chunks(self, location):
+        x, z = location
+        x_range = range(-CHUNK_DISTANCE, CHUNK_DISTANCE + 1)
+        z_range = range(-CHUNK_DISTANCE, CHUNK_DISTANCE + 1)
+        chunks = set()
+        for dx in x_range:
+            for dz in z_range:
+                if math.sqrt(dx ** 2 + dz ** 2) > CHUNK_DISTANCE:
+                    continue
+                chunks.add((x + dx, z + dz))
+        return chunks
+
+    def update_chunk_location(self, before, after):
+        """
+        Ensure that the proper adjacent chunks are visible.
+        """
+        current = self.get_nearby_chunks(before)
+        updated = self.get_nearby_chunks(after)
+
+        shown = updated - current
+        hidden = current - updated
+        for chunk in shown:
+            self.show_chunk(chunk)
+        for chunk in hidden:
+            self.hide_chunk(chunk)
+        self.chunk = after
+
+    def show_chunk(self, chunk_location):
+        """
+        Show all blocks contained within a given chunk.
+        """
+        for position in self.chunks.get(chunk_location, []):
+            if position not in self.visible and self.check_exposed(position):
+                self.show_block(position)
+
+    def hide_chunk(self, chunk_location):
+        """
+        Hide all blocks contained within a given chunk.
+        """
+        for position in self.chunks.get(chunk_location, []):
+            if position in self.visible:
+                self.hide_block(position)
+
     def add_block(self, position, block_id):
         """
         Place a block at a given set of coordinates.
         """
         # Place the block in the world
         self.world[position] = block_id
+        # Register the block in the proper chunk
+        self.chunks.setdefault(get_chunk(position, CHUNK_SIZE), []).append(position)
         # Make the block renderable
-        if self.check_exposed(position):
+        if get_chunk(position, CHUNK_SIZE) in self.nearby and self.check_exposed(position):
             self.show_block(position)
 
     def delete_block(self, position):
@@ -93,7 +148,7 @@ class Model(object):
         """
         del self.visible[position]
         # Remove from the batch by deleting the vertex list
-        self.vertices[position].pop().delete()
+        self.vertices.pop(position).delete()
 
     def check_exposed(self, position):
         """

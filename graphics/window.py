@@ -7,6 +7,7 @@ from pyglet.gl import *
 from config import *
 from model import Model
 from controls import *
+from helpers import get_chunk
 
 class Window(pyglet.window.Window):
     """
@@ -48,12 +49,14 @@ class Window(pyglet.window.Window):
         """
         Draw the debug text.
         """
-        debug_string = 'Position: {} \n{} fps \nBlocks: {} \nBlocks shown: {} \n{} \n{}'
-        self.label.text = debug_string.format(self.model.position, 
+        debug_string = 'x: {} \ny: {} \nz: {}\nChunk: {}\n{} fps \nBlocks: {} \nBlocks shown: {} \nSight vector:{}'
+        self.label.text = debug_string.format(self.model.position[0],
+                                              self.model.position[1],
+                                              self.model.position[2], 
+                                              get_chunk(self.model.position, CHUNK_SIZE),
                                               pyglet.clock.get_fps(),
                                               len(self.model.world),
                                               len(self.model.visible),
-                                              self.get_motion_vector(),
                                               self.get_sight_vector())
         self.label.draw()
 
@@ -171,7 +174,7 @@ class Window(pyglet.window.Window):
         Return a unit vector in the direction the player is currently looking.
         """
         theta, phi = self.model.rotation
-        # Do some trigonometry to 
+        # Do some trigonometry to get components
         x = math.sin(math.radians(theta)) * math.cos(math.radians(phi)) 
         y = math.sin(math.radians(phi))
         z = -math.cos(math.radians(theta)) * math.cos(math.radians(phi))
@@ -205,3 +208,6 @@ class Window(pyglet.window.Window):
         y += dy * FLYING_SPEED * dt
         z += dz * WALKING_SPEED * dt
         self.model.position = (x, y, z)
+        current_chunk = get_chunk(self.model.position, CHUNK_SIZE)
+        if current_chunk != self.model.chunk:
+            self.model.update_chunk_location(self.model.chunk, current_chunk)

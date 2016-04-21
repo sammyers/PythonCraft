@@ -17,6 +17,25 @@ def cube_vertices(position, width):
         x+n,y-n,z-n, x-n,y-n,z-n, x-n,y+n,z-n, x+n,y+n,z-n   #back
     ]
 
+def block_position(position):
+    """
+    Take an x, y, z location of arbitrary position 
+    and return the block containing that position.
+    """
+    x, y, z = position
+    return (int(x + 0.5), int(y + 0.5), int(z + 0.5))
+
+def get_chunk(position, chunk_size):
+    """
+    Return the location of the chunk containing a given block.
+    """
+    position = block_position(position)
+    x, z = position[::2]
+    x = (x + (chunk_size - 1) / 2) / chunk_size
+    z = (z + (chunk_size - 1) / 2) / chunk_size
+    return (x, z)
+
+
 def texture_coords(position, width=16):
     """
     Return the OpenGL texture coordinates for a given texture square.
