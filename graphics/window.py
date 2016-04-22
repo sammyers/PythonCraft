@@ -105,6 +105,10 @@ class Window(pyglet.window.Window):
         if symbol in MOVE:
             self.model.motion[MOVE[symbol][0]] -= MOVE[symbol][1]
 
+    def on_resize(self, width, height):
+        self.label.y = height - 10
+
+
     def set_3d(self):
         """
         Configure OpenGL to draw in 3D.

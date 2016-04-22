@@ -21,7 +21,7 @@ DIRECTIONS = [(1, 0, 0),
 CHUNK_SIZE = 25
 
 # Number of adjacent chunks to render around the player
-CHUNK_DISTANCE = 2
+CHUNK_DISTANCE = 4
 
 # Speeds are in meters per second
 WALKING_SPEED = 5.0
