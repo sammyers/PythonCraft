@@ -31,8 +31,8 @@ def get_chunk(position, chunk_size):
     """
     position = block_position(position)
     x, z = position[::2]
-    x = (x + (chunk_size - 1) / 2) / chunk_size
-    z = (z + (chunk_size - 1) / 2) / chunk_size
+    x = (x + (chunk_size - 1) / 2) // chunk_size
+    z = (z + (chunk_size - 1) / 2) // chunk_size
     return (x, z)
 
 

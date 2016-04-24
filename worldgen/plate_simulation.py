@@ -39,7 +39,7 @@ def generate_heightmap(seed, width, height):
     heightmap = np.reshape(int_hmap,(width,height))
 
     # for testing
-    print max(hmap)
+    # print max(hmap)
 
     # builds height dictionary from int_hmap coordinates and block IDs
     height_dict = {}

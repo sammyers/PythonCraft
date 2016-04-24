@@ -4,10 +4,10 @@ import pyglet
 from pyglet.window import key, mouse
 from pyglet.gl import *
 
-from config import *
-from model import Model
-from controls import *
-from helpers import get_chunk
+from .config import *
+from .model import Model
+from .controls import *
+from .helpers import get_chunk
 
 class Window(pyglet.window.Window):
     """

@@ -1,9 +1,9 @@
 from pyglet.graphics import Batch, TextureGroup
 from pyglet import image
 from pyglet.gl import *
-from blocks import BLOCKS
-from config import *
-from helpers import cube_vertices, texture_map, get_chunk
+from .blocks import BLOCKS
+from .config import *
+from .helpers import cube_vertices, texture_map, get_chunk
 import math
 
 class Model(object):

@@ -30,7 +30,7 @@ def Terrain(detail):
 	divide(max_length,int(size),big_mama)
 	#np.set_printoptions(threshold='nan')
 
-	print big_mama
+	# print big_mama
 
 	#places height map into a dictionary
 	height_dict = {}
