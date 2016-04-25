@@ -4,6 +4,8 @@
 import numpy as np
 import math
 import random
+from plate_simulation_array import generate_heightmap
+import fractal_height_map
 
 
 def Terrain(detail):
@@ -12,39 +14,27 @@ def Terrain(detail):
 	returns a dictionary containing x, y and z values 
 	"""
 	
-	#size defines the length and width of a height map
-	size = math.pow(2,detail)+1
-	max_length = int(size)
-	
-	
-	#defines height map
-	big_mama = np.zeros((size,size), np.int32)
-	test_mama = np.zeros((size,size), np.int32)	
-	
-	#defines all the corners to be halfway up the height map
-	big_mama[0,0] = size/2
-	big_mama[0,size-1] = size/2
-	big_mama[size-1,0] = size/2
-	big_mama[size-1,size-1] = size/2
+	size = int(math.pow(2,detail)+1)
 
-	# print big_mama
+	world = generate_heightmap(7487670, size, size)
+	#world = fractal_height_map.Terrain(4)
 
-	# test_mama[0,0] = 10
-	# test_mama[0,size-1] = 9
-	# test_mama[size-1,0] = 2
-	# test_mama[size-1,size-1] = size/2
+	world2 = world.tolist()
 
-	#print test_mama
+	print 'world2', world2
 
-	divide(max_length,int(size-1),big_mama)
-	#np.set_printoptions(threshold='nan')
+	#print world
 
-	return big_mama
-	print big_mama
+	world2 = add_zeros(world2)
+
+	print 'added zeros', world2
+
+	divide(len(world),2,world)
+
 
 	#places height map into a dictionary
 	height_dict = {}
-	for z, row in enumerate(big_mama):
+	for z, row in enumerate(world):
 		for x, h in enumerate(row):
 			for y in range(h + 1):
 				height_dict[(x, y, z)] = 6 if h == 0 else (1 if y == h else 2)
@@ -52,6 +42,20 @@ def Terrain(detail):
 	return height_dict
 
 	#return big_mama
+def add_zeros(array):
+	for row in range(0,len(array)):
+
+		#check if row is even
+		if row % 2 == 0:
+			for column in range(len(array[row]),0,-1):
+				array[row].insert(column,0)	
+				#np.insert(array[row],column,0)
+		else:
+			for column in range(len(array[row])-1,-1,-1):
+				array[row].insert(column,0)	
+				#np.insert(array[row],column,0)
+
+	return array 
 
 def chop_chimneys(b_m):
 
@@ -77,7 +81,7 @@ def divide(max_length, size, b_m):
 	half = int(size/2)
 	# print half
 
-	scale = (roughness*(size))
+	scale = 4 #(roughness*(size))
 
 	#ends recursion once size = 1
 	if half < 1:
@@ -168,4 +172,5 @@ def test(numba):
 
 if __name__ == "__main__":
  	b = Terrain(4)
+
  	#np.savetxt('dump2.csv', b, delimiter=',') 
