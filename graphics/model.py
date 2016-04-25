@@ -1,10 +1,11 @@
 from pyglet.graphics import Batch, TextureGroup
 from pyglet import image
 from pyglet.gl import *
+import math, time
+from collections import deque
 from .blocks import BLOCKS
 from .config import *
 from .helpers import cube_vertices, texture_map, get_chunk
-import math
 
 class Model(object):
     """
@@ -32,14 +33,11 @@ class Model(object):
         # Mapping from chunks to block locations within those chunks.
         self.chunks = {}
 
+        # The chunk in which the player is currently located.
+        self.chunk = None
+
         # The player's position in the world, initially at the origin.
         self.position = (0, 2, 0)
-
-        # The chunk in which the player is currently located.
-        self.chunk = get_chunk(self.position, CHUNK_SIZE)
-
-        #
-        self.nearby = self.get_nearby_chunks(self.chunk)
 
         # The rotation of the player's view. 
         # First element is in the xz plane, second in some rotation of the yz plane.
@@ -52,6 +50,10 @@ class Model(object):
         # For the third, backwards and forwards.
         self.motion = [0, 0, 0]
 
+        # A queue for function calls; this allows blocks to be added and removed
+        # in a way that doesn't slow down the game loop
+        self.queue = deque()
+
         # Place blocks in the world
         self._initialize()
 
@@ -62,13 +64,25 @@ class Model(object):
         for location in self.world:
             self.add_block(location, self.world[location])
 
+    def initial_render(self):
+        """
+        Make all blocks visually current by emptying the queue without breaks.
+        This method is called once, when the world is first loaded.
+        """
+        while self.queue:
+            self.dequeue()
+
     def get_nearby_chunks(self, location):
+        """
+        Return a set containing the chunk locations within range of a given chunk.
+        """
         x, z = location
         x_range = range(-CHUNK_DISTANCE, CHUNK_DISTANCE + 1)
         z_range = range(-CHUNK_DISTANCE, CHUNK_DISTANCE + 1)
         chunks = set()
         for dx in x_range:
             for dz in z_range:
+                # Only include chunks within a certain Euclidean distance
                 if math.sqrt(dx ** 2 + dz ** 2) > CHUNK_DISTANCE:
                     continue
                 chunks.add((x + dx, z + dz))
@@ -78,16 +92,24 @@ class Model(object):
         """
         Ensure that the proper adjacent chunks are visible.
         """
+        # Show all chunks in range when none are currently loaded.
+        # This happens once when the program starts.
+        if before is None:
+            chunks = self.get_nearby_chunks(after)
+            for chunk in chunks:
+                self.show_chunk(chunk)
+            return
+
         current = self.get_nearby_chunks(before)
         updated = self.get_nearby_chunks(after)
 
         shown = updated - current
         hidden = current - updated
+
         for chunk in shown:
             self.show_chunk(chunk)
         for chunk in hidden:
             self.hide_chunk(chunk)
-        self.chunk = after
 
     def show_chunk(self, chunk_location):
         """
@@ -95,7 +117,7 @@ class Model(object):
         """
         for position in self.chunks.get(chunk_location, []):
             if position not in self.visible and self.check_exposed(position):
-                self.show_block(position)
+                self.enqueue(self.show_block, position)
 
     def hide_chunk(self, chunk_location):
         """
@@ -103,7 +125,8 @@ class Model(object):
         """
         for position in self.chunks.get(chunk_location, []):
             if position in self.visible:
-                self.hide_block(position)
+                self.visible.pop(position)
+                self.enqueue(self.hide_block, position)
 
     def add_block(self, position, block_id):
         """
@@ -113,9 +136,6 @@ class Model(object):
         self.world[position] = block_id
         # Register the block in the proper chunk
         self.chunks.setdefault(get_chunk(position, CHUNK_SIZE), []).append(position)
-        # Make the block renderable
-        if get_chunk(position, CHUNK_SIZE) in self.nearby and self.check_exposed(position):
-            self.show_block(position)
 
     def delete_block(self, position):
         """
@@ -146,7 +166,6 @@ class Model(object):
         """
         Stop a block from being rendered.
         """
-        del self.visible[position]
         # Remove from the batch by deleting the vertex list
         self.vertices.pop(position).delete()
 
@@ -159,3 +178,24 @@ class Model(object):
             if (x + dx, y + dy, z + dz) not in self.world:
                 return True
         return False
+
+    def enqueue(self, func, *args):
+        """
+        Add a function to the queue to be called in the program's update loop.
+        """
+        self.queue.append((func, args))
+
+    def dequeue(self):
+        """
+        Call the function at the top of the queue.
+        """
+        func, args = self.queue.popleft()
+        func(*args)
+
+    def process_queue(self):
+        """
+        Call as many functions in the queue as possible within one tick of the game loop.
+        """
+        start_time = time.clock()
+        while self.queue and time.clock() - start_time < 1.0 / TICKS:
+            self.dequeue()
