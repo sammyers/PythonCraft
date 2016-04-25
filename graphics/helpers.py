@@ -17,6 +17,25 @@ def cube_vertices(position, width):
         x+n,y-n,z-n, x-n,y-n,z-n, x-n,y+n,z-n, x+n,y+n,z-n   #back
     ]
 
+def block_position(position):
+    """
+    Take an x, y, z location of arbitrary position 
+    and return the block containing that position.
+    """
+    x, y, z = position
+    return (int(x + 0.5), int(y + 0.5), int(z + 0.5))
+
+def get_chunk(position, chunk_size):
+    """
+    Return the location of the chunk containing a given block.
+    """
+    position = block_position(position)
+    x, z = position[::2]
+    x = (x + (chunk_size - 1) / 2) // chunk_size
+    z = (z + (chunk_size - 1) / 2) // chunk_size
+    return (int(x), int(z))
+
+
 def texture_coords(position, width=16):
     """
     Return the OpenGL texture coordinates for a given texture square.
@@ -67,3 +86,16 @@ def setup():
     # Make pixelated textures not look awful
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+
+def convert_heightmap(heightmap, width, height):
+    """
+    Take a 2D array of height values and return a world dictionary that the program can use.
+    """
+    height_dict = {}
+
+    for z, row in enumerate(heightmap):
+        for x, h in enumerate(row):
+            for y in range(h + 1):
+                height_dict[(x - width / 2, y, z - width / 2)] = 6 if h == 0 else (1 if y == h else (3 if y <= h - 3 else 2))
+
+    return height_dict

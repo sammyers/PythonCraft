@@ -4,9 +4,10 @@ import pyglet
 from pyglet.window import key, mouse
 from pyglet.gl import *
 
-from config import *
-from model import Model
-from controls import *
+from .config import *
+from .model import Model
+from .controls import *
+from .helpers import get_chunk
 
 class Window(pyglet.window.Window):
     """
@@ -48,13 +49,14 @@ class Window(pyglet.window.Window):
         """
         Draw the debug text.
         """
-        debug_string = 'Position: {} \n{} fps \nBlocks: {} \nBlocks shown: {} \n{} \n{}'
-        self.label.text = debug_string.format(self.model.position, 
+        debug_string = 'x: {} \ny: {} \nz: {}\nChunk: {}\n{} fps \nBlocks: {} \nBlocks shown: {}'
+        self.label.text = debug_string.format(self.model.position[0],
+                                              self.model.position[1],
+                                              self.model.position[2], 
+                                              get_chunk(self.model.position, CHUNK_SIZE),
                                               pyglet.clock.get_fps(),
                                               len(self.model.world),
-                                              len(self.model.visible),
-                                              self.get_motion_vector(),
-                                              self.get_sight_vector())
+                                              len(self.model.visible))
         self.label.draw()
 
     def on_mouse_motion(self, x, y, dx, dy):
@@ -101,6 +103,10 @@ class Window(pyglet.window.Window):
         """
         if symbol in MOVE:
             self.model.motion[MOVE[symbol][0]] -= MOVE[symbol][1]
+
+    def on_resize(self, width, height):
+        self.label.y = height - 10
+
 
     def set_3d(self):
         """
@@ -165,13 +171,14 @@ class Window(pyglet.window.Window):
         Return the position of the block the player is currently looking at.
         """
         direction = self.get_sight_vector()
+        # This needs work
 
     def get_sight_vector(self):
         """
         Return a unit vector in the direction the player is currently looking.
         """
         theta, phi = self.model.rotation
-        # Do some trigonometry to 
+        # Do some trigonometry to get components
         x = math.sin(math.radians(theta)) * math.cos(math.radians(phi)) 
         y = math.sin(math.radians(phi))
         z = -math.cos(math.radians(theta)) * math.cos(math.radians(phi))
@@ -197,8 +204,20 @@ class Window(pyglet.window.Window):
 
     def update(self, dt):
         """
-        Update player movement. Called once per tick.
+        Update player movement and process block rendering. Called once per tick.
         """
+        # Load as many block showing/hiding calls as possible
+        self.model.process_queue()
+
+        # Update the visible chunks if you've moved
+        current_chunk = get_chunk(self.model.position, CHUNK_SIZE)
+        if current_chunk != self.model.chunk:
+            self.model.update_chunk_location(self.model.chunk, current_chunk)
+            if self.model.chunk is None:
+                self.model.initial_render()
+            self.model.chunk = current_chunk
+
+        # Update player position
         x, y, z = self.model.position
         dx, dy, dz = self.get_motion_vector()
         x += dx * WALKING_SPEED * dt
