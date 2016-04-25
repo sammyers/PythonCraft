@@ -1,8 +1,3 @@
-class Block(object):
-
-    def __init__(self, id):
-        self.id = id
-
 # Mapping of block IDs to attributes of those blocks.
 BLOCKS = {
 	1: {

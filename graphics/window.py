@@ -49,15 +49,14 @@ class Window(pyglet.window.Window):
         """
         Draw the debug text.
         """
-        debug_string = 'x: {} \ny: {} \nz: {}\nChunk: {}\n{} fps \nBlocks: {} \nBlocks shown: {} \nSight vector:{}'
+        debug_string = 'x: {} \ny: {} \nz: {}\nChunk: {}\n{} fps \nBlocks: {} \nBlocks shown: {}'
         self.label.text = debug_string.format(self.model.position[0],
                                               self.model.position[1],
                                               self.model.position[2], 
                                               get_chunk(self.model.position, CHUNK_SIZE),
                                               pyglet.clock.get_fps(),
                                               len(self.model.world),
-                                              len(self.model.visible),
-                                              self.get_sight_vector())
+                                              len(self.model.visible))
         self.label.draw()
 
     def on_mouse_motion(self, x, y, dx, dy):
@@ -172,6 +171,7 @@ class Window(pyglet.window.Window):
         Return the position of the block the player is currently looking at.
         """
         direction = self.get_sight_vector()
+        # This needs work
 
     def get_sight_vector(self):
         """
@@ -204,14 +204,23 @@ class Window(pyglet.window.Window):
 
     def update(self, dt):
         """
-        Update player movement. Called once per tick.
+        Update player movement and process block rendering. Called once per tick.
         """
+        # Load as many block showing/hiding calls as possible
+        self.model.process_queue()
+
+        # Update the visible chunks if you've moved
+        current_chunk = get_chunk(self.model.position, CHUNK_SIZE)
+        if current_chunk != self.model.chunk:
+            self.model.update_chunk_location(self.model.chunk, current_chunk)
+            if self.model.chunk is None:
+                self.model.initial_render()
+            self.model.chunk = current_chunk
+
+        # Update player position
         x, y, z = self.model.position
         dx, dy, dz = self.get_motion_vector()
         x += dx * WALKING_SPEED * dt
         y += dy * FLYING_SPEED * dt
         z += dz * WALKING_SPEED * dt
         self.model.position = (x, y, z)
-        current_chunk = get_chunk(self.model.position, CHUNK_SIZE)
-        if current_chunk != self.model.chunk:
-            self.model.update_chunk_location(self.model.chunk, current_chunk)
