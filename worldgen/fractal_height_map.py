@@ -156,8 +156,8 @@ def square(row, column, b_m, offset, size):
 
 
 def test(numba):
-	a = Terrain(numba)
- 	b = Terrain(numba)
+	a = terrain(numba)
+ 	b = terrain(numba)
  	c = a*b/2
  	print c/2
 
