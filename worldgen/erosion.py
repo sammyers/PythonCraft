@@ -14,8 +14,8 @@ from fractal_height_map import terrain
 class Cell(object):
     """Represents a cell in the erosion grid. Tracks relevant attributes.
 
-    attributes: b (terrain height), d (water height), s (sediment), fL, fR, fT, fB
-    (outflow fluxes), velocity
+    attributes: b (terrain height), d (water height), s (sediment),
+    fL, fR, fT, fB (outflow fluxes), velocity
     temp attributes: d1, d2, s1"""
 
     def __init__(self, z):
