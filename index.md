@@ -2,7 +2,7 @@
 title: Home
 layout: template
 filename: index
---- 
+---
 
 # PythonCraft
 A program to procedurally generate 3-dimensional worlds made of cubes and view the evolution of the landscape over time. Right now it generates the world on the fly and launches the pyglet window as soon as it's been generated, so just run main.py with Python. 
