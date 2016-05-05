@@ -609,8 +609,7 @@ p.tagline {
 
 a.page-link,
 a.page-link span {
-  width: 30px;
-  height: 21px;
+  padding-left: 0;
   display: inline-block;
   text-indent: -10000px;
   opacity: 0.8;
