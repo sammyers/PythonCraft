@@ -33,12 +33,12 @@ Guess what more text
 
 ### Graphical Engine
 
-
+Once loaded, blocks are stored as 3-dimensional coordinates in the form of dictionary keys (the corresponding values are integers corresponding to block type). There are separate dictionaries to keep track of blocks that should be visible and cube vertices of visual blocks, and to map chunk positions (see Chunk Loading below) to coordinates of blocks within those chunks. 
 
 #### OpenGL Vertices
 
+When a block is supposed to be visually active, a helper function converts this position to a list of 24 vertex coordinates bounding the 6 faces (this is the format OpenGL takes). OpenGL can work with any relative coordinate system; for our purposes, each block has a width of 1 unit. These are "sized" relatively based on the player's field of view, which is 60 degrees. Each block ID is mapped to a set of 2-dimensional vertex coordinates that determine the textures of the top, bottom, and sides of that block, which can be returned as a list by a helper function and passed to OpenGL. Once cube and texture vertices have been generated, these lists are stored in a Pyglet batch and are rendered each frame until removed from the batch. Note: only blocks that can be seen (not surrounded on all sides) are rendered to reduce overhead.
+
 #### Chunk Loading
 
-Some more text here
-
-#### This is a subheading 
+In order to prevent all of the thousands of blocks from being rendered at once, the world is sectioned into 25x25-block sections (no y-coordinate limit) and rendered in a certain radius around the player as necessary. When a chunk is hidden or shown, the chunk mapping dictionary is used to hide or show each visual block in each position within the chunk. The current chunk the player is in is checked during each tick, allowing the active radius to be updated accordingly.
