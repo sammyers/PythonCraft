@@ -195,6 +195,7 @@ class Model(object):
     def process_queue(self):
         """
         Call as many functions in the queue as possible within one tick of the game loop.
+        This allows chunks to be loaded and unloaded without slowing down the program.
         """
         start_time = time.clock()
         while self.queue and time.clock() - start_time < 1.0 / TICKS:
