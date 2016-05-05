@@ -1,6 +1,6 @@
 {
   "name": "Better Than Earth",
   "tagline": "A program to procedurally generate 3-dimensional worlds made of cubes and view the evolution of the landscape over time.",
-  "body": "# PythonCraft\r\nA program to procedurally generate 3-dimensional worlds made of cubes and view the evolution of the landscape over time. Right now it generates the world on the fly and launches the pyglet window as soon as it's been generated, so just run main.py with Python. \r\n\r\nThe current version uses textures from Mojang's Minecraft, and certain elements of the program structure were inspired by Michael Fogleman's \"Minecraft\" repository.\r\n\r\n#### Dependencies:\r\n* Pyglet\r\n* Numpy\r\n* PyPlatec\r\n\r\n`pip install pyglet numpy pyplatec`\r\n\r\n#### Controls:\r\n__WASD:__ Normal movement\r\n__Space:__ Fly up\r\n__Shift:__ Fly down\r\n__Esc:__ Pause",
+  "body": "CONTENT",
   "note": "Don't delete this file! It's used internally to help with page regeneration."
 }
