@@ -1,4 +1,5 @@
-"""first run at diamond square method, with help of javascript tutorial
+"""
+first run at diamond square method, with help of javascript tutorial: http://www.playfuljs.com/realistic-terrain-in-130-lines/
 """
 
 import numpy as np
@@ -9,7 +10,7 @@ import random
 def terrain(detail):
 	"""
 	initializes a height map with a size specified by 'detail'
-	returns a dictionary containing x, y and z values
+	and returns a dictionary of blocks containing x, y and z values
 	"""
 
 	#size defines the length and width of a height map
@@ -17,10 +18,8 @@ def terrain(detail):
 	max_length = int(size)
 
 
-	#defines height map
+	#defines height map as numpy array
 	big_mama = np.zeros((size,size), np.int32)
-	test_mama = np.zeros((size,size), np.int32)
-
 
 	#defines all the corners to be halfway up the height map
 	big_mama[0,0] = size/2
@@ -28,20 +27,8 @@ def terrain(detail):
 	big_mama[size-1,0] = size/2
 	big_mama[size-1,size-1] = size/2
 
-	# print big_mama
-
-	# test_mama[0,0] = 10
-	# test_mama[0,size-1] = 9
-	# test_mama[size-1,0] = 2
-	# test_mama[size-1,size-1] = size/2
-
-	#print test_mama
-
+	#populates the height map with pseudo-random values
 	divide(max_length,int(size-1),big_mama)
-	#np.set_printoptions(threshold='nan')
-
-	return big_mama
-	# print big_mama
 
 	#places height map into a dictionary
 	height_dict = {}
@@ -50,62 +37,41 @@ def terrain(detail):
 			for y in range(h + 1):
 				height_dict[(x, y, z)] = 6 if h == 0 else (1 if y == h else 2)
 
-	# return height_dict
-	return big_mama
-
-	#return big_mama
-
-def chop_chimneys(b_m):
-
-
-			if row - size >= 0:
-				avg.append(b_m[row-size,column])
-			if column - size >= 0:
-				avg.append(b_m[row,column-size])
-			if row + size < ml:
-				avg.append(b_m[row+size,column])
-			if column + size < ml:
-				avg.append(b_m[row,column+size])
+	return height_dict
 
 
 def divide(max_length, size, b_m):
 
 	"""
-	divides the grid into squares and diamonds recursively in that order
+	divides the grid into squares and diamonds recursively 
+	in that order and then define's each points height
+	by calling either the diamond and square function
 	"""
 
-	roughness = .7 #dictates roughness of
+	#higher value results in more rought terrain (0-1)
+	roughness = .7
 
-
+	#dicates how many squares the height map is divided into
 	half = int(size/2)
-	# print half
 
+	#earlier height definitions are larger in scale (height) than later height definitions
 	scale = (roughness*(size))
 
-	#ends recursion once size = 1
+	#ends recursive calls once size = 1
 	if half < 1:
 		return
 
 	#finds all the points that need a square part of algorithm applied to it
-
 	for column in range(half, max_length, size):
 		for row in range(half, max_length, size):
-			# print row
-			# print column
-			print 'scale', scale
-
 			square(row, column, b_m, random.random()*scale*2-scale, half)
 
 	#finds all the points that need diamond part of algorithm applied to it
 	for column in range(0, max_length, half):
 		for row in range((column + half)%(size), max_length, size):
-			# print column
-			# print row
-			print 'scale', scale
-
 			diamond(row, column, b_m, random.random()*scale*2-scale, half, max_length)
 
-	#calls divide again to increase detail
+	#recursively calls divide again to increase detail
 	divide(max_length,int(size/2), b_m)
 
 
@@ -117,8 +83,8 @@ def diamond(row, column, b_m, offset, size, ml):
 
 	avg = []
 
-
-
+	#checks if surrounding dimaond points exist
+	#takes value if point exists
 	if row - size >= 0:
 		avg.append(b_m[row-size,column])
 	if column - size >= 0:
@@ -127,51 +93,25 @@ def diamond(row, column, b_m, offset, size, ml):
 		avg.append(b_m[row+size,column])
 	if column + size < ml:
 		avg.append(b_m[row,column+size])
-	#print avg
 
+	#averages all existing surounding diamond points
 	avgg = np.average(avg)
 
-	print 'avg', avgg
-	print 'offset', offset
-
-
 	b_m[row,column] = avgg + offset
-	# if x == 2 and y == 1:
-	# 	b_m[x,y] = 0
-
 
 def square(row, column, b_m, offset, size):
-
 	"""
 	computes the average height of the four surrounding points and adds and additional random height to
 	average
 	"""
 
-
+	#calculates the average of the four surrounding points
 	avg = np.average([b_m[row-size,column-size], b_m[row+size,column-size], b_m[row-size,column+size], b_m[row+size,column+size]])
 
 	b_m[row,column] = avg + offset
 
 
-
-
-def test(numba):
-	a = terrain(numba)
- 	b = terrain(numba)
- 	c = a*b/2
- 	print c/2
-
- 	height_dict = {}
-
-	for z, row in enumerate(b):
-		for x, h in enumerate(row):
-			for y in range(h + 1):
-				height_dict[(x, y, z)] = 0 if h == 2 else (1 if y == h else 2)
-
-	return height_dict
-
-
 if __name__ == "__main__":
-
  	b = terrain(4)
- 	#np.savetxt('dump2.csv', b, delimiter=',')
+
+
