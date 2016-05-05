@@ -1,4 +1,4 @@
-TEXTURE_PATH = 'terrain.png'
+TEXTURE_PATH = 'terrain3.png'
 
 # Ticks per second
 TICKS = 60
