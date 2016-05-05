@@ -35,8 +35,8 @@ def generate_heightmap(seed, width, height):
     platec.destroy(p)
 
     # converts to other useful formats, including an actual array instead of a list
-    int_hmap = [int(round(h)) for h in hmap]
-    heightmap = np.reshape(int_hmap,(width,height))
+    # int_hmap = [int(round(h)) for h in hmap]
+    heightmap = np.reshape(hmap,(width,height))
 
     # for testing
     # print max(hmap)
@@ -46,13 +46,17 @@ def generate_heightmap(seed, width, height):
 
 
 if __name__ == "__main__":
-    seed = 3
-    width = 100
-    height = 100
+    seed = 7487670
+    width = 1000
+    height = 1000
 
-    height_dict = generate_heightmap(seed, width, height)
+    # from tempfile import TemporaryFile()
+    # plates_ten_thousand.npy = TemporaryFile()
 
-    zeros = filter(lambda x: x[1] == 0, height_dict)
+    heightmap = generate_heightmap(seed, width, height)
+    np.save("plates_1000.npy",heightmap)
+
+    # zeros = filter(lambda x: x[1] == 0, height_dict)
     # print len(zeros)
 
     # print height_dict
