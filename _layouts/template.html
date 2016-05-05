@@ -30,7 +30,7 @@
         <div class="download-bar">
         <div class="inner">
           {% for page in site.pages %}
-            <a href={{ page.filename }} class="download-button" > {{ page.title }}</a>
+            <a href={{ page.filename }} class="download-button" > <span>{{ page.title }}</span></a>
           {% endfor %}
           <a href="https://github.com/sammyers/PythonCraft/tarball/master" class="download-button tar"><span>Download</span></a>
           <a href="https://github.com/sammyers/PythonCraft/zipball/master" class="download-button zip"><span>Download</span></a>
