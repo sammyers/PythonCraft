@@ -68,7 +68,6 @@ def texture_map(top, bottom, sides):
             Coordinates within the texture file of each face of the cube.
             Values are in the discrete domain [0, n], 
             where n is the number of textures in each row/column of the texture file.
-
     """
     top_vertices = texture_coords(top)
     bottom_vertices = texture_coords(bottom)
