@@ -96,7 +96,23 @@ def convert_heightmap(heightmap, width, height):
     for z, row in enumerate(heightmap):
         for x, h in enumerate(row):
             for y in range(h + 1):
-                height_dict[(x - width / 2, y, z - width / 2)] = (6 if h == 0
-                else (1 if y == h else (3 if y <= h - 3 else 2)))
+                if h == 0:
+                    height_dict[(x - width / 2, y, z - width / 2)] = 6
+                elif h > 5:
+                    if y == h and h > 6:
+                        height_dict[(x - width / 2, y, z - width / 2)] = 7
+                    else:
+                        height_dict[(x - width / 2, y, z - width / 2)] = 3
+                elif h > 4 and y == h:
+                    height_dict[(x - width / 2, y, z - width / 2)] = 8
+                elif y == h:
+                    if h == 1:
+                        height_dict[(x - width / 2, y, z - width / 2)] = 4
+                    else:
+                        height_dict[(x - width / 2, y, z - width / 2)] = 1
+                # elif y <= h - 3:
+                #     height_dict[(x - width / 2, y, z - width / 2)] = 3
+                else:
+                    height_dict[(x - width / 2, y, z - width / 2)] = 2
 
     return height_dict
