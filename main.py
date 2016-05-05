@@ -2,6 +2,7 @@ import pyglet
 from graphics import Window, setup, convert_heightmap
 from worldgen import generate_heightmap
 from worldgen import fractal_height_map
+from worldgen import platec_text
 import numpy as np
 
 def main(world_size):

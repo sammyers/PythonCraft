@@ -21,22 +21,27 @@ def Terrain(detail):
 
 	world2 = world.tolist()
 
-	print 'world2', world2
+	#print 'world2', world2
 
 	#print world
 
 	world2 = add_zeros(world2)
 
-	print 'added zeros', world2
+	#print 'added zeros', world2
 
-	divide(len(world),2,world)
+	divide(len(world2),64,world2)
 
-
+	world2 = world2*5
+	#return world2
+	#np.asarray(world2)
+	#print world2
 	#places height map into a dictionary
 	height_dict = {}
-	for z, row in enumerate(world):
+	for z, row in enumerate(world2):
 		for x, h in enumerate(row):
+			#print h
 			for y in range(h + 1):
+
 				height_dict[(x, y, z)] = 6 if h == 0 else (1 if y == h else 2)
 
 	return height_dict
@@ -81,7 +86,7 @@ def divide(max_length, size, b_m):
 	half = int(size/2)
 	# print half
 
-	scale = 4 #(roughness*(size))
+	scale = (roughness*(size))/3
 
 	#ends recursion once size = 1
 	if half < 1:
@@ -92,7 +97,7 @@ def divide(max_length, size, b_m):
 		for row in range(half, max_length, size):
 			# print row
 			# print column
-			print 'scale', scale
+			#print 'scale', scale
 
 			square(row, column, b_m, random.random()*scale*2-scale, half)
 		
@@ -101,7 +106,7 @@ def divide(max_length, size, b_m):
 		for row in range((column + half)%(size), max_length, size):
 			# print column
 			# print row
-			print 'scale', scale
+			#print 'scale', scale
 
 			diamond(row, column, b_m, random.random()*scale*2-scale, half, max_length)
 		
@@ -117,24 +122,34 @@ def diamond(row, column, b_m, offset, size, ml):
 
 	avg = []
 
-
+	row = int(row)
+	column = int(column)
 
 	if row - size >= 0:
-		avg.append(b_m[row-size,column])
+		avg.append(b_m[row-size][column])
 	if column - size >= 0:
-		avg.append(b_m[row,column-size])
+		avg.append(b_m[row][column-size])
 	if row + size < ml:
-		avg.append(b_m[row+size,column])
+		avg.append(b_m[row+size][column])
 	if column + size < ml:
-		avg.append(b_m[row,column+size])
+		avg.append(b_m[row][column+size])
 	#print avg
 
-	avgg = np.average(avg)
-	print 'avg', avgg
-	print 'offset', offset
+	avgg = sum(avg)/len(avg) #np.average(avg)
+	#print 'avg', avgg
+	#print 'offset', offset
+	offset = random.randint(0,2)
+	if avgg == 0:
+		return
+	# elif avgg <= 1 and avgg != 0:
+	# 	b_m[row][column] = 1
 	
-
-	b_m[row,column] = avgg + offset 
+	elif avgg <= 2:
+		offset = random.randint(0,1)
+		b_m[row][column] = int(avgg + offset)
+	else:
+		offset = random.randint(0,2)
+		b_m[row][column] = int(avgg + offset)
 	# if x == 2 and y == 1:
 	# 	b_m[x,y] = 0
 
@@ -146,10 +161,23 @@ def square(row, column, b_m, offset, size):
 	average
 	"""
 
+	offset = random.randint(0,2)
+	avg = np.average([b_m[row-size][column-size], b_m[row+size][column-size], b_m[row-size][column+size], b_m[row+size][column+size]])
+	if avg == 0:
+		return
 
-	avg = np.average([b_m[row-size,column-size], b_m[row+size,column-size], b_m[row-size,column+size], b_m[row+size,column+size]])
 
-	b_m[row,column] = avg + offset 
+
+	#elif avg <= 1 and avg != 0:
+		#b_m[row][column] = 1
+	elif avg <= 2:
+		offset = offset = random.randint(0,1)
+
+		b_m[row][column] = int(avg + offset)
+		
+	else:
+		offset = offset = random.randint(0,2)
+		b_m[row][column] = int(avg + offset)
 
 
 
@@ -171,6 +199,6 @@ def test(numba):
 
 
 if __name__ == "__main__":
- 	b = Terrain(4)
+ 	b = Terrain(10)
 
  	#np.savetxt('dump2.csv', b, delimiter=',') 
