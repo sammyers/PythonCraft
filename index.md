@@ -4,10 +4,12 @@ layout: template
 filename: index
 ---
 
-# PythonCraft
-A program to procedurally generate 3-dimensional worlds made of cubes and view the evolution of the landscape over time. Right now it generates the world on the fly and launches the pyglet window as soon as it's been generated, so just run main.py with Python. 
+A program to procedurally generate 3-dimensional worlds made of cubes based on a number of terrain algorithms. 
 
-The current version uses textures from Mojang's Minecraft, and certain elements of the program structure were inspired by Michael Fogleman's "Minecraft" repository.
+### To run:
+* Generate a folder of terrain files by running generate_world.py; change the SEED variable to change the output of the terrain algorithm if desired.
+* Load the program by running main.py. Make sure the WORLD_DIR variable is equal to the name of the directory containing the region files.
+
 
 #### Dependencies:
 * Pyglet
