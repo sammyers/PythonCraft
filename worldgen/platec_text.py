@@ -1,4 +1,9 @@
-"""first run at diamond square method, with help of javascript tutorial
+"""
+this program incrementally built up fractal_height_map.py
+this program interpolates a height map produced by pyplatec and 'textures'
+it with fractal noise (diamond square)
+
+refer to fractal_height_map.py for proper documentation
 """
 
 import numpy as np
@@ -16,18 +21,15 @@ def Terrain(detail):
 	
 	size = int(math.pow(2,detail)+1)
 
+	#retrieves a world from the
 	world = generate_heightmap(7487670, size, size)
-	#world = fractal_height_map.Terrain(4)
+
 
 	world2 = world.tolist()
 
-	print 'world2', world2
-
-	#print world
-
 	world2 = add_zeros(world2)
 
-	print 'added zeros', world2
+
 
 	divide(len(world),2,world)
 
@@ -41,7 +43,7 @@ def Terrain(detail):
 
 	return height_dict
 
-	#return big_mama
+
 def add_zeros(array):
 	for row in range(0,len(array)):
 
@@ -56,18 +58,6 @@ def add_zeros(array):
 				#np.insert(array[row],column,0)
 
 	return array 
-
-def chop_chimneys(b_m):
-
-	
-			if row - size >= 0:
-				avg.append(b_m[row-size,column])
-			if column - size >= 0:
-				avg.append(b_m[row,column-size])
-			if row + size < ml:
-				avg.append(b_m[row+size,column])
-			if column + size < ml:
-				avg.append(b_m[row,column+size])
 
 
 def divide(max_length, size, b_m):
@@ -90,19 +80,13 @@ def divide(max_length, size, b_m):
 	#finds all the points that need a square part of algorithm applied to it
 	for column in range(half, max_length, size):
 		for row in range(half, max_length, size):
-			# print row
-			# print column
-			print 'scale', scale
 
 			square(row, column, b_m, random.random()*scale*2-scale, half)
 		
 	#finds all the points that need diamond part of algorithm applied to it
 	for column in range(0, max_length, half):
 		for row in range((column + half)%(size), max_length, size):
-			# print column
-			# print row
-			print 'scale', scale
-
+		
 			diamond(row, column, b_m, random.random()*scale*2-scale, half, max_length)
 		
 	#calls divide again to increase detail 	
@@ -117,8 +101,6 @@ def diamond(row, column, b_m, offset, size, ml):
 
 	avg = []
 
-
-
 	if row - size >= 0:
 		avg.append(b_m[row-size,column])
 	if column - size >= 0:
@@ -127,17 +109,10 @@ def diamond(row, column, b_m, offset, size, ml):
 		avg.append(b_m[row+size,column])
 	if column + size < ml:
 		avg.append(b_m[row,column+size])
-	#print avg
 
 	avgg = np.average(avg)
-	print 'avg', avgg
-	print 'offset', offset
-	
 
 	b_m[row,column] = avgg + offset 
-	# if x == 2 and y == 1:
-	# 	b_m[x,y] = 0
-
 
 def square(row, column, b_m, offset, size):
 
@@ -153,24 +128,6 @@ def square(row, column, b_m, offset, size):
 
 
 
-
-def test(numba):
-	a = Terrain(numba)
- 	b = Terrain(numba)
- 	c = a*b/2
- 	print c/2
-
- 	height_dict = {}
-
-	for z, row in enumerate(b):
-		for x, h in enumerate(row):
-			for y in range(h + 1):
-				height_dict[(x, y, z)] = 0 if h == 2 else (1 if y == h else 2)
-
-	return height_dict
-
-
 if __name__ == "__main__":
  	b = Terrain(4)
 
- 	#np.savetxt('dump2.csv', b, delimiter=',') 
