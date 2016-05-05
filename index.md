@@ -22,6 +22,9 @@ A program to procedurally generate 3-dimensional worlds made of cubes based on a
 
 #### Controls:
 __WASD:__ Normal movement
+
 __Space:__ Fly up
+
 __Shift:__ Fly down
+
 __Esc:__ Pause
