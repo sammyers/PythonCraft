@@ -1,12 +1,12 @@
 """first run at diamond square method, with help of javascript tutorial
 """
-
+from tempfile import TemporaryFile
 import numpy as np
 import math
 import random
 
 
-def Terrain(detail):
+def terrain(detail):
 	"""
 	initializes a height map with a size specified by 'detail'
 	returns a dictionary containing x, y and z values 
@@ -27,6 +27,15 @@ def Terrain(detail):
 	big_mama[size-1,0] = size/2
 	big_mama[size-1,size-1] = size/2
 
+	print len(big_mama)
+
+
+	# big_mama[0,0] = size/2
+	# big_mama[0,size-1] = size/2
+	# big_mama[size-1,0] = size/2
+	# big_mama[size-1,size-1] = size/2
+
+
 	# print big_mama
 
 	# test_mama[0,0] = 10
@@ -39,7 +48,8 @@ def Terrain(detail):
 	divide(max_length,int(size-1),big_mama)
 	#np.set_printoptions(threshold='nan')
 
-	return big_mama
+	#print big_mama
+	#return big_mama
 	# print big_mama
 
 	#places height map into a dictionary
@@ -49,9 +59,9 @@ def Terrain(detail):
 			for y in range(h + 1):
 				height_dict[(x, y, z)] = 6 if h == 0 else (1 if y == h else 2)
 
-	return height_dict
+	#return height_dict
 
-	#return big_mama
+	return big_mama
 
 def chop_chimneys(b_m):
 
@@ -88,7 +98,7 @@ def divide(max_length, size, b_m):
 		for row in range(half, max_length, size):
 			# print row
 			# print column
-			print 'scale', scale
+			# print 'scale', scale
 
 			square(row, column, b_m, random.random()*scale*2-scale, half)
 		
@@ -97,7 +107,7 @@ def divide(max_length, size, b_m):
 		for row in range((column + half)%(size), max_length, size):
 			# print column
 			# print row
-			print 'scale', scale
+			# print 'scale', scale
 
 			diamond(row, column, b_m, random.random()*scale*2-scale, half, max_length)
 		
@@ -113,7 +123,7 @@ def diamond(row, column, b_m, offset, size, ml):
 
 	avg = []
 
-
+	
 
 	if row - size >= 0:
 		avg.append(b_m[row-size,column])
@@ -126,8 +136,8 @@ def diamond(row, column, b_m, offset, size, ml):
 	#print avg
 
 	avgg = np.average(avg)
-	print 'avg', avgg
-	print 'offset', offset
+	# print 'avg', avgg
+	# print 'offset', offset
 	
 
 	b_m[row,column] = avgg + offset 
@@ -141,6 +151,7 @@ def square(row, column, b_m, offset, size):
 	computes the average height of the four surrounding points and adds and additional random height to 
 	average
 	"""
+	
 
 
 	avg = np.average([b_m[row-size,column-size], b_m[row+size,column-size], b_m[row-size,column+size], b_m[row+size,column+size]])
@@ -167,5 +178,8 @@ def test(numba):
 
 
 if __name__ == "__main__":
- 	b = Terrain(4)
+	#outfile = TemporaryFile()
+ 	b = terrain(2)
+ 	np.save('mountain.npy', b)
+ 	print np.load('mountain.npy')
  	#np.savetxt('dump2.csv', b, delimiter=',') 
