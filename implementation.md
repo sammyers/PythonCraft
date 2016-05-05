@@ -28,7 +28,17 @@ The main program uses a variant of the standard model-view-controller structure,
 
 ### Terrain Algorithms
 
-Guess what more text
+The terrain the player explores is generated through a series of algorithms that produce and manipulate various heightmaps and three-dimensional arrays. The original heightmap is a fractal coastline initialized and subsequently heavily manipulated by the plate tectonics simulation. The map may then be scaled up through a combination of cubic interpolation and the diamond-square fractal surface procedure, then eroded through a simplified sediment-pipe model for surface flow. Caves may then be generated below the surface of the heightmap. As the final step, weather, latitude, and Holdridge life zone calculations would determine the material types and local environments.
+
+
+#### Fractal Algorithms
+
+Fractal algorithms largely compose the basis of modern algorithmic terrain generation. It's no surprise why; fractal techniques are relatively easy to implement, computationally inexpensive, and can generate some impressively realistic results. Under this category is diamond-square surface generation, Perlin noise in two and three dimensions, and fractal coastline generation. Unfortunately, fractal algorithms tend to generate consistently similar results, never achieving the extremes of variation found in many physical systems.
+
+
+#### Evolutionary Algorithms
+
+Evolutionary algorithms tend to be difficult and expensive to implement, as well as requiring high degrees of accuracy to physical systems to produce convincing results. Most work on iterative algorithmic processes has occured in isolation; much work has been done on producing accurate plate tectonics simulations alone. The iterative evolutionary algorithms we used include plate tectonics and hydraulic erosion.
 
 
 ### Graphical Engine
