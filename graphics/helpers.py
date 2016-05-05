@@ -1,7 +1,7 @@
 from pyglet.gl import *
 
 def cube_vertices(position, width):
-    """ 
+    """
     Return the vertices of the cube at position (x, y, z) with a given size.
     """
     x, y, z = position
@@ -19,7 +19,7 @@ def cube_vertices(position, width):
 
 def block_position(position):
     """
-    Take an x, y, z location of arbitrary position 
+    Take an x, y, z location of arbitrary position
     and return the block containing that position.
     """
     x, y, z = position
@@ -39,7 +39,7 @@ def get_chunk(position, chunk_size):
 def texture_coords(position, width=16):
     """
     Return the OpenGL texture coordinates for a given texture square.
-    
+
     Parameters:
         position (tuple):
             The x, y position in the texture grid of the desired texture (indexed from 0).
@@ -62,12 +62,13 @@ def texture_coords(position, width=16):
 def texture_map(top, bottom, sides):
     """
     Return a list of texture vertices for a cube.
-    
+
     Parameters:
-        top, bottom, sides (tuples): 
+        top, bottom, sides (tuples):
             Coordinates within the texture file of each face of the cube.
-            Values are in the discrete domain [0, n], 
+            Values are in the discrete domain [0, n],
             where n is the number of textures in each row/column of the texture file.
+
     """
     top_vertices = texture_coords(top)
     bottom_vertices = texture_coords(bottom)
@@ -95,6 +96,7 @@ def convert_heightmap(heightmap, width, height):
     for z, row in enumerate(heightmap):
         for x, h in enumerate(row):
             for y in range(h + 1):
-                height_dict[(x - width / 2, y, z - width / 2)] = 6 if h == 0 else (1 if y == h else (3 if y <= h - 3 else 2))
+                height_dict[(x - width / 2, y, z - width / 2)] = (6 if h == 0
+                else (1 if y == h else (3 if y <= h - 3 else 2)))
 
     return height_dict
