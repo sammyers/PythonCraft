@@ -28,7 +28,7 @@ def terrain(detail):
 	big_mama[size-1,0] = size/2
 	big_mama[size-1,size-1] = size/2
 
-	print len(big_mama)
+
 
 
 	# big_mama[0,0] = size/2
@@ -63,10 +63,10 @@ def terrain(detail):
 
 	#return height_dict
 
-	# return height_dict
+	return height_dict
 
 
-	return big_mama
+	#return big_mama
 
 def chop_chimneys(b_m):
 

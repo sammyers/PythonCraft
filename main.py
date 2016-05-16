@@ -11,7 +11,7 @@ def main(world_size):
 
     #world = convert_heightmap(platec_text.Terrain(10), width, height)
 
-    world = fractal_height_map.Terrain(7)
+    world = fractal_height_map.terrain(8)
     #world = platec_text.Terrain(8)
     window = Window(world=world, width=800, height=600, caption='PythonCraft', resizable=True)
     setup()

@@ -39,16 +39,15 @@ def generate_cave_2D_XL(size, iterations):
 	Generates a cave by stitching together a bunch of smaller caves
 	"""
 
-	test_cave = generate_cave_2D(size)
-	test_cave_2 = generate_cave_2D(size)
-	test_cave_3 = generate_cave_2D(size)
-	test_cave_4 = generate_cave_2D(size)
+	test_cave = generate_cave_2D(size) + generate_cave_2D(size)
+	test_cave_2 = generate_cave_2D(size) + generate_cave_2D(size)
+	test_cave_3 = generate_cave_2D(size) + generate_cave_2D(size)
+	test_cave_4 = generate_cave_2D(size) + generate_cave_2D(size)
+
 	test_cave_5 = generate_cave_2D(size)
 	test_cave_6 = generate_cave_2D(size)
 	test_cave_7 = generate_cave_2D(size)
 	test_cave_8 = generate_cave_2D(size)
-
-	print len(test_cave), len(test_cave[0])
 
 	a = combine_vert(test_cave,test_cave_2)
 
@@ -56,41 +55,25 @@ def generate_cave_2D_XL(size, iterations):
 
 	c = combine_horiz(a,b)
 
-	print len(c), len(c[0])
-
-	d = combine_vert(test_cave_5,test_cave_6)
-
-	e = combine_vert(test_cave_7,test_cave_8)
-
-	f = combine_horiz(d,e)
-
-	print len(f),len(f[0])
-
-	g = combine_horiz(c,f)
-
-	print len(g),len(g[0])
-
-	h = combine_vert(g,g)
-
-	return h
+	return c
 
 
-def combine_horiz(baby_1,baby_2):
+def combine_horiz(baby_1,baby_2): 
 	"""
 	merges two arrays horizontally with an overlap
 	"""
 	
-	overlap = 10
+	overlap = 30
 
-	baby_1_r = baby_1[len(baby_1)-overlap:len(baby_1)]
+	baby_1_r = baby_1[:,len(baby_1[0])-overlap:len(baby_1[0])]
 
-	baby_2_l = baby_2[0:overlap]
+	baby_2_l = baby_2[:,0:overlap]
 
 	baby_baby_rl = baby_1_r + baby_2_l
 
-	combination = np.concatenate((baby_1[0:len(baby_1)-overlap].T,baby_baby_rl.T), axis = 1)
+	combination = np.concatenate((baby_1[:,0:len(baby_1[0])-overlap],baby_baby_rl), axis = 1)
 
-	combination = np.concatenate((combination,baby_2[overlap:len(baby_2)].T), axis = 1)
+	combination = np.concatenate((combination,baby_2[:,overlap:len(baby_2[0])]), axis = 1)
 
 	return combination
 
@@ -100,7 +83,7 @@ def combine_vert(baby_1, baby_2):
 	merges two arrays vertically with an overlap
 	"""
 	
-	overlap = 10
+	overlap = 30
 
 	baby_1_b = baby_1[len(baby_1)-overlap:len(baby_1),0:len(baby_1)]
 
@@ -118,14 +101,18 @@ def depopulate_cave(cave):
 	"""
 	returns a cave with decreased volume
 	"""
-	size = len(cave)
 
-	new_cave = np.zeros((size,size), np.int16)
+	size_x = len(cave)
+	size_y = len(cave[0])
+	if size_x > size_y:
+		new_cave = np.zeros((size_x,size_x), np.int16)
+	else:
+		new_cave = np.zeros((size_y,size_y), np.int16)
 
 	#if the inside of the cave is touching a wall
 	#move the wall inward by a single point
-	for x in range(0,size):
-		for y in range(0,size):
+	for x in range(0,size_y):
+		for y in range(0,size_x):
 			if cave[y,x] == 1:
 				sides = 0
 				if x-1 >= 0:
@@ -135,11 +122,11 @@ def depopulate_cave(cave):
 					if (cave[y-1,x]) == 0:
 						sides +=1
 
-				if x +1 < size:
+				if x +1 < size_x:
 					if (cave[y,x-1]) == 0:
 						sides += 1
 
-				if y +1 < size:
+				if y +1 < size_y:
 					if (cave[y+1,x]) == 0:
 						sides +=1
 
@@ -162,7 +149,7 @@ def generate_cave_3D(cave):
 	temp_cave = cave
 	stack = np.zeros((len(cave),len(cave)),np.int16)
 
-	#creates a 'stack' of 30 caves
+	#creates a 'stack' of 60 caves
 	for i in range(30):
 		temp2_cave = depopulate_cave(temp_cave)
 		stack = np.dstack((stack,temp2_cave)) 
@@ -173,7 +160,11 @@ def generate_cave_3D(cave):
 
 if __name__ == "__main__":
 
-	cave_one = generate_cave_2D_XL(7,4)
+	#import doctest
+    
+    #doctest.testmod()
+
+	cave_one = generate_cave_2D_XL(10,4)
 
 	cave_3D = generate_cave_3D(cave_one)
 
