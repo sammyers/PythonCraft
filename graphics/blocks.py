@@ -16,8 +16,8 @@ BLOCKS = {
 		'durability': 5
 		},
 	4: {
-		'name': 'Brick',
-		'texture': ((7, 15), (7, 15), (7, 15)),
+		'name': 'Sand',
+		'texture': ((2, 14), (2, 14), (2, 14)),
 		'durability': 5
 		},
 	5: {
@@ -27,12 +27,17 @@ BLOCKS = {
 		},
 	6: {
 		'name': 'Water',
-		'texture': ((14, 15), (14, 15), (14, 15)),
+		'texture': ((14, 3), (14, 3), (14, 3)),
 		'durability': 1000
 		},
 	7: {
-		'name': 'Diamond Block',
-		'texture': ((8, 10), (8, 8), (8, 9)),
+		'name': 'Snow',
+		'texture': ((2, 11), (2, 11), (2, 11)),
+		'durability': 1000
+		},
+	8: {
+		'name': 'Snowy Dirt',
+		'texture': ((2, 11), (2, 15), (4, 11)),
 		'durability': 1000
 		}
 }

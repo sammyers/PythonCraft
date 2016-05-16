@@ -1,7 +1,7 @@
 from pyglet.gl import *
 
 def cube_vertices(position, width):
-    """ 
+    """
     Return the vertices of the cube at position (x, y, z) with a given size.
     """
     x, y, z = position
@@ -19,7 +19,7 @@ def cube_vertices(position, width):
 
 def block_position(position):
     """
-    Take an x, y, z location of arbitrary position 
+    Take an x, y, z location of arbitrary position
     and return the block containing that position.
     """
     x, y, z = position
@@ -39,7 +39,7 @@ def get_chunk(position, chunk_size):
 def texture_coords(position, width=16):
     """
     Return the OpenGL texture coordinates for a given texture square.
-    
+
     Parameters:
         position (tuple):
             The x, y position in the texture grid of the desired texture (indexed from 0).
@@ -62,12 +62,13 @@ def texture_coords(position, width=16):
 def texture_map(top, bottom, sides):
     """
     Return a list of texture vertices for a cube.
-    
+
     Parameters:
-        top, bottom, sides (tuples): 
+        top, bottom, sides (tuples):
             Coordinates within the texture file of each face of the cube.
-            Values are in the discrete domain [0, n], 
+            Values are in the discrete domain [0, n],
             where n is the number of textures in each row/column of the texture file.
+
     """
     top_vertices = texture_coords(top)
     bottom_vertices = texture_coords(bottom)
@@ -85,6 +86,25 @@ def setup():
     # Make pixelated textures not look awful
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+    setup_fog()
+
+def setup_fog():
+    """ 
+    Configure the OpenGL fog properties.
+    """
+    # Enable fog. Fog "blends a fog color with each rasterized pixel fragment's
+    # post-texturing color."
+    glEnable(GL_FOG)
+    # Set the fog color.
+    glFogfv(GL_FOG_COLOR, (GLfloat * 4)(0.5, 0.69, 1.0, 1))
+    # Say we have no preference between rendering speed and quality.
+    glHint(GL_FOG_HINT, GL_DONT_CARE)
+    # Specify the equation used to compute the blending factor.
+    glFogi(GL_FOG_MODE, GL_LINEAR)
+    # How close and far away fog starts and ends. The closer the start and end,
+    # the denser the fog in the fog range.
+    glFogf(GL_FOG_START, 200.0)
+    glFogf(GL_FOG_END, 250.0)
 
 def convert_heightmap(heightmap, width, height):
     """
@@ -95,6 +115,23 @@ def convert_heightmap(heightmap, width, height):
     for z, row in enumerate(heightmap):
         for x, h in enumerate(row):
             for y in range(h + 1):
-                height_dict[(x - width / 2, y, z - width / 2)] = 6 if h == 0 else (1 if y == h else (3 if y <= h - 3 else 2))
+                if h == 0:
+                    height_dict[(x - width / 2, y, z - width / 2)] = 6
+                elif h > 5:
+                    if y == h and h > 6:
+                        height_dict[(x - width / 2, y, z - width / 2)] = 7
+                    else:
+                        height_dict[(x - width / 2, y, z - width / 2)] = 3
+                elif h > 4 and y == h:
+                    height_dict[(x - width / 2, y, z - width / 2)] = 8
+                elif y == h:
+                    if h == 1:
+                        height_dict[(x - width / 2, y, z - width / 2)] = 4
+                    else:
+                        height_dict[(x - width / 2, y, z - width / 2)] = 1
+                # elif y <= h - 3:
+                #     height_dict[(x - width / 2, y, z - width / 2)] = 3
+                else:
+                    height_dict[(x - width / 2, y, z - width / 2)] = 2
 
     return height_dict

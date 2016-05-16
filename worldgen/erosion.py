@@ -9,6 +9,7 @@ Mei, et al. Fast Hydraulic Erosion Simulation and Visualization on GPU
 import math as mfn
 import numpy as np
 from fractal_height_map import terrain
+import random
 
 
 class Cell(object):
@@ -41,7 +42,7 @@ class Cell(object):
 class CellGrid(np.ndarray):
     """Grid of Cells with relevant functions. Represents the simulation surface.
 
-    attributes: numpy subclass"""
+    attributes: ndarray subclass"""
 
     def __new__(cls, data):
         cells = [[Cell(z) for z in row] for row in data]
@@ -52,6 +53,22 @@ class CellGrid(np.ndarray):
     def __array_finalize__(self,obj):
         if obj is None: return
 
+    def run_simulation(self,tstep,ttotal):
+        """runs the erosion simulation for ttotal time at tstep intervals"""
+        steps = int(ttotal/tstep)
+        for step in range(steps):
+            it = np.nditer(self, flags=['refs_ok','multi_index'], op_flags=['readwrite'])
+            while not it.finished:
+                if random.random() < 0.1:
+                    self.water_increment(it.multi_index, 1.0, tstep)
+                self.flow_simulation(it.multi_index, tstep)
+                self.erosion_deposition(it.multi_index, tstep)
+                self.sediment_transportation(it.multi_index, tstep)
+                # self.evaporation(index, 0.1, tstep)
+                it.iternext()
+        for i in range(100):
+            for index in np.ndindex(*self.shape):
+                self.evaporation(index, 0.1, tstep)
 
     def water_increment(self,(x,y),water_rate,tstep):
         """Adds water to a specified point, at water_rate amount per time"""
@@ -126,9 +143,9 @@ class CellGrid(np.ndarray):
     def erosion_deposition(self,(x,y),tstep):
         """Calculates whether/how much sediment is picked up or deposited at
         each point based on constants, local tilt angle and velocity field"""
-        kc = 1 # sediment capacity constant
-        ks = 0.5 # dissolving constant
-        kd = 0.3 # deposition constant
+        kc = 0.5 # sediment capacity constant
+        ks = 0.1 # dissolving constant
+        kd = 0.1 # deposition constant
 
         # find local tilt angle by averaging absolutes of opposite pairs of angles
         alpha = (abs(mfn.atan(self[x,y].b - self[(x-1) % self.shape[0],y].b)
@@ -157,8 +174,8 @@ class CellGrid(np.ndarray):
     def sediment_transportation(self,(x,y),tstep):
         """Takes new sediment level values from sediment in previous locations.
         Calculates previous location through velocity field, time step"""
-        x1 = (x - self[x,y].velocity[1] * tstep) % self.shape[0]
-        y1 = (y - self[x,y].velocity[2] * tstep) % self.shape[1]
+        x1 = int((x - self[x,y].velocity[0] * tstep)) % self.shape[0]
+        y1 = int((y - self[x,y].velocity[1] * tstep)) % self.shape[1]
         self[x,y].s = self[x1,y1].s1
 
 
@@ -169,32 +186,32 @@ class CellGrid(np.ndarray):
 
 if __name__ == "__main__":
 
-    heightmap = terrain(5)
-    step = 1
-    t = CellGrid(heightmap)
-    t.water_increment((3,4),4.0,step)
-    t.flow_simulation((3,4),step)
-    t.flow_simulation((2,3),step)
-    t.flow_simulation((2,4),step)
-    t.flow_simulation((2,5),step)
-    t.flow_simulation((3,3),step)
-    t.flow_simulation((3,5),step)
-    t.flow_simulation((4,3),step)
-    t.flow_simulation((4,4),step)
-    t.flow_simulation((4,5),step)
-    print t[2,3].b, t[2,4].b, t[2,5].b
-    print t[3,3].b, t[3,4].b, t[3,5].b
-    print t[4,3].b, t[4,4].b, t[4,5].b
-    print t[3,4].velocity
-    t.erosion_deposition((3,4),step)
-    t.erosion_deposition((2,3),step)
-    t.erosion_deposition((2,4),step)
-    t.erosion_deposition((2,5),step)
-    t.erosion_deposition((3,3),step)
-    t.erosion_deposition((3,5),step)
-    t.erosion_deposition((4,3),step)
-    t.erosion_deposition((4,4),step)
-    t.erosion_deposition((4,5),step)
-    print t[2,3].s1, t[2,4].s1, t[2,5].s1
-    print t[3,3].s1, t[3,4].s1, t[3,5].s1
-    print t[4,3].s1, t[4,4].s1, t[4,5].s1
+    from mpl_toolkits.mplot3d import Axes3D
+    import matplotlib.pyplot as plt
+    import scipy.io as sio
+
+    # mountain = CellGrid(np.load("mountain.npy"))
+    # mountain.run_simulation(0.1,10)
+    # print "simulation complete"
+    # heights = np.array([[cell.b for cell in row] for row in mountain])
+    # print "height conversion finished"
+
+    # continents = CellGrid(np.load("plates_1000.npy"))
+    # continents.run_simulation(0.2,10)
+    # heights = np.array([[cell.b for cell in row] for row in continents])
+    # np.save("plates_1000_eroded.npy", heights)
+
+    heights = np.load("plates_1000_eroded.npy")
+    sio.savemat("plates_1000_eroded.mat", {'heights':heights})
+
+    # X = np.arange(0, heights.shape[0])
+    # Y = np.arange(0, heights.shape[1])
+    # X, Y = np.meshgrid(X, Y)
+    # Z = heights[X,Y]
+    # fig = plt.figure()
+    # ax = fig.gca(projection='3d')
+    # surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap='gist_earth', linewidth=0, antialiased=False)
+    # # ax.set_zlim(-1.01, 1.01)
+    #
+    # fig.colorbar(surf, shrink=0.5, aspect=5)
+    # plt.show()
