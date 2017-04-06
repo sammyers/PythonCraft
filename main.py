@@ -1,7 +1,6 @@
 import pyglet
 from graphics import Window, setup, convert_heightmap
 from worldgen import generate_heightmap
-from worldgen import fractal_height_map
 import numpy as np
 
 WORLD_FILE = "plates_1000.npy"
