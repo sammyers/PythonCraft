@@ -28,11 +28,6 @@ def terrain(detail):
     big_mama[size-1,0] = size/2
     big_mama[size-1,size-1] = size/2
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 527af4fbe1a88f6997349ec49e5e96260bfc416a
-
     # big_mama[0,0] = size/2
     # big_mama[0,size-1] = size/2
     # big_mama[size-1,0] = size/2
@@ -63,17 +58,9 @@ def terrain(detail):
                 height_dict[(x, y, z)] = 6 if h == 0 else (1 if y == h else 2)
 
 
-<<<<<<< HEAD
-
 	#return height_dict
 
 	return height_dict
-
-
-	#return big_mama
-=======
-    return height_dict
->>>>>>> 527af4fbe1a88f6997349ec49e5e96260bfc416a
 
 def chop_chimneys(b_m):
 
