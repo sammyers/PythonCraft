@@ -1,4 +1,4 @@
-from worldgen import generate_heightmap, fractal_height_map
+from worldgen import generate_heightmap
 import numpy as np
 
 SEED = 7487670
